@@ -6,7 +6,7 @@ var giphy = require('giphy-api')();
 //No longer using http using actual GIPHY API
 //var http = require('http');
 
-
+app.use(express.static('public'));
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');
 });
