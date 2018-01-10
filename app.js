@@ -17,8 +17,30 @@ app.set('view engine', 'handlebars');
 
 //Home router, shows contents of home.handlebars
 app.get('/', function (req, res) {
-    console.log(req.query);
-    res.render('home');
+    console.log(req.query.term)
+    var queryString = req.query.term;
+    // Encode the query string to remove white spaces and restricted characters
+    var term = encodeURIComponent(queryString);
+    //Put the search term into the giphy api search url
+    var url = 'http://api.giphy.com/v1/gifs/search?q=' + term + '&api_key=dc6zaTOxFJmzC';
+    
+    http.get(url, function(response) {
+        //Set encoding of response to UTF8
+        response.setEncoding('utf8');
+        var body = '';
+        response.on('data', function(d) {
+            //Continuously update stream with data from giphy
+            body += d;
+        });
+        
+        response.on('end', function () {
+            //When data is fully received parse into json
+            var parsed = JSON.parse(body);
+            //Render the home template and pass the gif data in to template
+            res.render('home', {gifs: parsed.data});
+        });
+        
+    });
 });
 
 //Shows contents of hello-world.handlebars
